@@ -1,10 +1,12 @@
 import React, {FC, useEffect, useState} from 'react'
-import {Button, Container, Stack} from '@chakra-ui/react'
+import {Button, Container, Stack, Switch, Heading, Flex, Spacer, Box, Icon} from '@chakra-ui/react'
 import {timer} from 'rxjs'
 
 import {tweets} from "./utils/datasource";
 import {ITweetContent} from './types/tweet-content.interface'
 import Tweet from './components/tweet/tweet'
+import {feedHeadingContainerStyle, feedHeadingStyle, feedHeartIconStyle} from './feed.style';
+import {IoHeart, IoHeartOutline} from "react-icons/all";
 
 const Feed: FC = () => {
   const [tweetList, setTweetList] = useState<ITweetContent[]>([])
@@ -25,6 +27,14 @@ const Feed: FC = () => {
     })
   }
 
+  const handleSwitchChange = () => () => {
+    setOnlyLiked(!onlyLiked)
+  }
+
+  const handleClearButtonClick = () => () => {
+    setTweetList([])
+  }
+
   useEffect(() => {
     const subscription = tweets.subscribe(newTweet =>
       setTweetList((oldTweetList) => [newTweet, ...oldTweetList]))
@@ -41,8 +51,18 @@ const Feed: FC = () => {
 
   return (
     <Container maxW="xl" centerContent>
-      <Button onClick={() => setOnlyLiked(false)}>All</Button>
-      <Button onClick={() => setOnlyLiked(true)}>Liked</Button>
+      <Flex {...feedHeadingContainerStyle}>
+        <Heading {...feedHeadingStyle}>Home</Heading>
+        <Spacer />
+        <Box>
+          <Icon {...feedHeartIconStyle} as={onlyLiked ? IoHeart : IoHeartOutline}/>
+          <Switch size="sm" mr={1} onChange={handleSwitchChange()} />
+          <Button variant="ghost"
+            colorScheme="twitter"
+            onClick={handleClearButtonClick()}
+            size="sm">Clear</Button>
+        </Box>
+      </Flex>
       <Stack spacing={2}>
         {tweetList
           .filter(tweet => !onlyLiked || (onlyLiked && tweet.liked))

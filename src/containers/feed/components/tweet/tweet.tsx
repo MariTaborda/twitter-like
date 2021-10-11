@@ -16,7 +16,6 @@ const Tweet: FC<ITweetProps> = ({tweet, onTweetLiked}) => {
   const {account, timestamp, content, liked} = tweet
 
   const handleClick = () => {
-    console.log('click')
     onTweetLiked()
   }
 
